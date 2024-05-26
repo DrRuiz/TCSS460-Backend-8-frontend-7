@@ -2,7 +2,7 @@ import express, { Express, Request, Response, request } from 'express';
 
 import cors from 'cors';
 
-import { routes } from './routes';
+import { routes } from './app/routes';
 import { pool } from './core/utilities';
 
 const app: Express = express();

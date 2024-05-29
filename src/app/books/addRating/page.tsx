@@ -83,9 +83,11 @@ export default function addRating() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
+    const isbn13 = String(data.get("isbn13"));
+
     const validateFields = addRatingFormSchema.safeParse({
-      isbn13: data.get("isbn13"),
-      rating: data.get("rating"),
+      isbn13: isbn13,
+      star: Number(data.get("star")),
     });
 
     if (!validateFields.success) {
@@ -101,13 +103,15 @@ export default function addRating() {
     } else {
       setFormState({});
     }
-    console.dir(validateFields.data);
-    fetch("http://localhost:4000/books/update_by_ratings", {
-      method: "PUT", // *GET, POST, PUT, DELETE, etc.
+    console.dir('isbn13:', isbn13);
+
+    fetch(`http://localhost:4000/books/rating/${isbn13}`, {
+      method: "PUT", // *GET, POST, PUT, DELETE, etc.S
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(validateFields.data),
+      body: JSON.stringify({
+        star : validateFields.data.star}),
     })
       .then((res) =>
         res
@@ -157,14 +161,14 @@ export default function addRating() {
               autoFocus
             />
             <TextField
-              error={formState?.errors?.rating != undefined}
-              helperText={formState?.errors?.rating ?? ""}
+              error={formState?.errors?.star != undefined}
+              helperText={formState?.errors?.star ?? ""}
               margin="normal"
               required
               fullWidth
-              id="rating"
+              id="star"
               label="Rating (1-5) : "
-              name="rating"
+              name="star"
             />
 
             <Button

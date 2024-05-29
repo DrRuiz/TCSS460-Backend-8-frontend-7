@@ -405,15 +405,9 @@ booksRouter.put(
         //  console.log(value);
         const theQuery =
             'SELECT rating_1_star, rating_2_star, rating_3_star, rating_4_star, rating_5_star FROM books WHERE isbn13 = $1';
-
         try {
             // We'll get the current star ratings and average rating
             const result = await pool.query(theQuery, [isbn]);
-            if (result.rowCount > 1) {
-                response.status(500).send({
-                    message: 'Server error - more than 1 ISBN found',
-                });
-            }
             if (result.rowCount == 0) {
                 response.status(404).send({
                     message: 'Book not found',

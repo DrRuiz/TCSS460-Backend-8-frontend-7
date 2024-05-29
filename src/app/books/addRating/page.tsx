@@ -8,38 +8,18 @@ import { FormState, addRatingFormSchema } from "./definitions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-
-
-interface IBook {
-  authors: string;
-  id: number;
-  image_small_url: string;
-  image_url: string;
-  isbn13: string;
-  original_title: string;
-  publication_year: number;
-  rating_1_star: number;
-  rating_2_star: number;
-  rating_3_star: number;
-  rating_4_star: number;
-  rating_5_star: number;
-  rating_avg: number;
-  rating_count: number;
-  title: string;
-}
-
-function BookListItem({book}: {book: IBook}) {
+function BookListItem({book}: {book: /*IBook*/object}) {
   const [value, setValue] = React.useState<number | null>(5);
   return (
     <Container sx={{position: "absolute", left: "0%"}}>
-      <Box component="img" src={book.image_url}
+      <Box component="img" src="https://images.gr-assets.com/books/1474154022m/3.jpg" 
       sx={{border: "3px solid", borderColor: "secondary.main", float: "left", marginRight: "1em"}} 
       />
       {/* <Typography sx={{fontSize: '24px'}}>
       {book.title}
       </Typography> */}
       <Typography sx={{fontSize: '24px'}}>
-      {book.title}
+      Harry Potter and the Sorcerer's Stone (Harry Potter #1)
       </Typography>
       {/* <Typography sx={{fontSize: '12px', color: "text.secondary"}}>
       ISBN: {book.isbn13}
@@ -47,7 +27,7 @@ function BookListItem({book}: {book: IBook}) {
       <br />
       </Typography> */}
       <Typography sx={{fontSize: '12px', color: "text.secondary"}}>
-      ISBN: {book.isbn13}
+      ISBN: 919241982418
       <br />
       <br />
       </Typography>
@@ -56,14 +36,14 @@ function BookListItem({book}: {book: IBook}) {
       <br />
       </Typography> */}
       <Typography sx={{fontSize: '18px'}}>
-      By {book.authors} - {book.publication_year}
+      By J.K. Rowling - Published 2001
       <br />
       </Typography>
       {/* <Typography sx={{fontSize: '14px'}}>
       Total Ratings: {book.ratings.count} / Average Rating: {book.ratings.average}
       </Typography> */}
       <Typography sx={{fontSize: '14px'}}>
-      Total Ratings: {book.rating_count} / Average Rating: {book.rating_avg}
+      Total Ratings: 1213831 / Average Rating: 4.54
       </Typography>
       <Typography sx={{fontSize: '14px'}}>
       <Rating 
@@ -89,24 +69,6 @@ interface IAlert {
   alertSeverity: string;
 }
 
-let displayedBook: IBook = {
-  authors: "",
-  id: 0,
-  image_small_url: "",
-  image_url: "",
-  isbn13: "",
-  original_title: "",
-  publication_year: 0,
-  rating_1_star: 0,
-  rating_2_star: 0,
-  rating_3_star: 0,
-  rating_4_star: 0,
-  rating_5_star: 0,
-  rating_avg: 0,
-  rating_count: 0,
-  title: ""
-};
-
 const EMPTY_ALERT: IAlert = {
   showAlert: false,
   alertMessage: "",
@@ -116,6 +78,7 @@ const EMPTY_ALERT: IAlert = {
 export default function addRating() {
   const [formState, setFormState] = React.useState<FormState>();
   const [alert, setAlert] = React.useState(EMPTY_ALERT);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -163,7 +126,6 @@ export default function addRating() {
             alertMessage: "Rating Updated!",
             alertSeverity: "success",
           });
-        displayedBook = res.body.book
         } else {
           setAlert({
             showAlert: true,
@@ -218,7 +180,6 @@ export default function addRating() {
               Add Rating
             </Button>
       </Box>
-      <BookListItem book={displayedBook} />
     </Container>
   );
 }

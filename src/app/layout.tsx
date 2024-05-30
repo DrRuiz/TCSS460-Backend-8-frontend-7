@@ -6,6 +6,20 @@ import CssBaseline from "@mui/material/CssBaseline";
 // import theme from "@/theme";
 
 export const theme = createTheme({
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          input: {
+            "&:-webkit-autofill": {
+              WebkitBoxShadow: "0 0 0 100px #282a36 inset",
+              WebkitTextFillColor: "#ffffff",
+            },
+          },
+        },
+      },
+    },
+  },
   palette: {
     primary: {
       main: '#191A21',
@@ -33,7 +47,7 @@ export const theme = createTheme({
     },
     text: {
       primary: '#ffffff',
-      secondary: '#6272a4'
+      secondary: '#8be9fd'
     },
   },
 });

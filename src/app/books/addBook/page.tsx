@@ -70,7 +70,7 @@ export default function AddBook() {
           width: "100%",
         }} 
       >
-        <Typography variant="h2" component="h1" sx={{ mb: 2, textAlign: "center"}} color='info.main'>
+        <Typography variant="h2" component="h1" sx={{ mb: 2, textAlign: "center"}}>
           Add a New Book
         </Typography>
       </Box>

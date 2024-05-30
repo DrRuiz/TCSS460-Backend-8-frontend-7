@@ -36,10 +36,12 @@ interface IBook {
 
 function BookListItem(
   {book, onGetDetails,}: {book: IBook; onGetDetails: ({book}: {book: IBook}) => void;}) {
+  const noImage = "https://i.ibb.co/1J2FMZJ/NoImage.png";
   return (
     <ListItem onClick={() => onGetDetails({book})}>
         <ListItemAvatar>
             <Avatar src=/*{book.icons.large}*/"https://images.gr-assets.com/books/1447303603m/2767052.jpg" 
+            // src={book.icons.large ?? noImage} 
             variant="square" 
             sx={{width: "98px", height: "146px", marginRight: "1em", border: "3px solid", borderColor: "secondary.main"}}/>
         </ListItemAvatar>
@@ -135,7 +137,7 @@ export default function Find() {
           </Stack> */}
           <Box sx={{ mt: 1 }}>
             <List>
-              {books.map((book, index, books) => (
+              {books?.map((book, index, books) => (
                   <React.Fragment key={"book list item: " + index}>
                     <BookListItem book={book} onGetDetails={handleDetails} />
                     {index < books.length - 1 && (

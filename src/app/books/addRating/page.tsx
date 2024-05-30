@@ -7,6 +7,7 @@ import Rating from '@mui/material/Rating';
 import { FormState, addRatingFormSchema } from "./definitions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
 
 interface IBook {
   authors: string;
@@ -28,9 +29,10 @@ interface IBook {
 
 function BookListItem({book}: {book: IBook}) {
   const [value, setValue] = React.useState<number | null>(5);
+  const noImage = "https://i.ibb.co/1J2FMZJ/NoImage.png";
   return (
-    <Container sx={{position: "absolute", left: "0%"}}>
-      <Box component="img" src={book.image_url}
+    <Card sx={{position: "absolute", left: "1em", width: "50em"}}>
+      <Box component="img" src={book.image_url ?? noImage}
       sx={{border: "3px solid", borderColor: "secondary.main", float: "left", marginRight: "1em"}} 
       />
       {/* <Typography sx={{fontSize: '24px'}}>
@@ -70,14 +72,10 @@ function BookListItem({book}: {book: IBook}) {
         onChange={(event, newVal) => {
           setValue(newVal);
         }}
+        sx={{bordercolor: "warning.main"}}
     />
       </Typography>
-      <Typography sx={{fontSize: '14px'}}>
-        <Rating 
-        name='book-rating'
-        />
-      </Typography>
-    </Container>
+    </Card>
   );
 }
 
@@ -181,7 +179,7 @@ export default function addRating() {
             noValidate
             sx={{ mt: 1 }}
           >
-        <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: "center"}} color='info.main'>
+        <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: "center"}}>
           Add Rating to a Book
         </Typography>
 
@@ -195,7 +193,8 @@ export default function addRating() {
               label="ISBN13 Number: "
               name="isbn13"
               autoFocus
-            />
+              color="info"
+        />
             <TextField
               error={formState?.errors?.star != undefined}
               helperText={formState?.errors?.star ?? ""}
@@ -205,6 +204,7 @@ export default function addRating() {
               id="star"
               label="Rating (1-5) : "
               name="star"
+              color="info"
             />
 
             <Button

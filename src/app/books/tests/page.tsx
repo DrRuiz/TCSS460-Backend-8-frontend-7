@@ -8,10 +8,13 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
+import Card from '@mui/material/Card';
 
 
 export default function BottomAppBar() {
     const [value, setValue] = React.useState<number | null>(5);
+    const testImage = null;
+    const otherImage = "https://i.ibb.co/1J2FMZJ/NoImage.png";
   return (
     <React.Fragment>
 <ListItem>
@@ -30,8 +33,8 @@ export default function BottomAppBar() {
 <br />
 <br />
 <br />
-<Container sx={{position: "absolute", left: "0%"}}>
-<Box component="img" src="https://images.gr-assets.com/books/1474154022m/3.jpg" 
+<Card sx={{position: "absolute", left: "0%", width: "50em"}}>
+<Box component="img" src={testImage ?? otherImage} 
 sx={{border: "3px solid", borderColor: "secondary.main", float: "left", marginRight: "1em"}} 
 />
 <Typography sx={{fontSize: '24px'}}>
@@ -59,8 +62,15 @@ sx={{border: "3px solid", borderColor: "secondary.main", float: "left", marginRi
     
     />
 </Typography>
-</Container>
+</Card>
 </React.Fragment>
     
   );
 }
+
+{/* <Avatar src={testImage ?? otherImage}
+        variant='square'
+        sx={{width: "98px", height: "146px", marginRight: "1em", border: "3px solid", borderColor: "secondary.main"
+        }}>
+            
+        </Avatar> */}

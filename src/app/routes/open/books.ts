@@ -53,54 +53,6 @@ booksRouter.get('/all', async (request: Request, response: Response) => {
 });
 
 /**
- * @api {get} /books/all Request to all retrieve entry books.
- *
- * @apiDescription Request to retrieve all the entry books with pagination and details.
- *
- * @apiQuery {int} page page we're on
- * @apiQuery {int} limit many book data entry we want to show up in the page
- *
- * @apiName GetAllBooks
- * @apiGroup Book
- *
- * @apiSuccess {String[]} entries the aggregate of all entries as the following string:
- *      ""title": <code>title</code>"
- */
-booksRouter.get('/all2', async (request: Request, response: Response) => {
-    const page = parseInt(request.query.page as string, 10) || 1; //default is page 1.
-    const limit = parseInt(request.query.limit as string, 10) || 10;
-
-    // const firstIndex = (page - 1) * limit;
-    // const lastIndex = page * limit;
-
-    const offset = (page - 1) * limit;
-
-    const theQuery = 'SELECT * FROM books LIMIT $1 OFFSET $2';
-    const countQuery = 'SELECT COUNT(*) FROM books';
-    try {
-        const result = await pool.query(theQuery, [limit, offset]);
-
-        const countBooks = await pool.query(countQuery);
-        const totalBooks = parseInt(countBooks.rows[0].count, 10);
-        const totalPage = Math.ceil(totalBooks / limit);
-        // console.log(totalBooks);
-        // console.log(totalPage);
-        response.send({
-            books: result.rows,
-            pagination: {
-                page: page,
-                limit: limit,
-                totalPages: totalPage,
-            },
-        });
-    } catch (err) {
-        console.error('Error querying database:', err);
-        response.status(500).send('server error - contact support');
-    }
-});
-
-
-/**
  * @api {get} /books/title/:title Request to get books by relative titles.
  *
  * @apiDescription Request to retrieve all books with relative title.
@@ -453,15 +405,9 @@ booksRouter.put(
         //  console.log(value);
         const theQuery =
             'SELECT rating_1_star, rating_2_star, rating_3_star, rating_4_star, rating_5_star FROM books WHERE isbn13 = $1';
-
         try {
             // We'll get the current star ratings and average rating
             const result = await pool.query(theQuery, [isbn]);
-            if (result.rowCount > 1) {
-                response.status(500).send({
-                    message: 'Server error - more than 1 ISBN found',
-                });
-            }
             if (result.rowCount == 0) {
                 response.status(404).send({
                     message: 'Book not found',

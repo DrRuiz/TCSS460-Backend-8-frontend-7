@@ -49,7 +49,7 @@ export default function Find() {
 
   const [books, setBooks] = React.useState<IBook[]>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [booksPerPage, setBooksPerPage] = React.useState(20);
+  const [booksPerPage, setBooksPerPage] = React.useState(10);
   const [lastPage, setLastPage] = React.useState(10);
 
 

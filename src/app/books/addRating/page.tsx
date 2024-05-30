@@ -29,7 +29,7 @@ interface IBook {
 
 function BookListItem({book}: {book: IBook}) {
   const [value, setValue] = React.useState<number | null>(5);
-  const noImage = "https://i.ibb.co/1J2FMZJ/NoImage.png";
+  const noImage = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
   return (
     <Card sx={{position: "absolute", left: "1em", width: "50em"}}>
       <Box component="img" src={book.image_url ?? noImage}

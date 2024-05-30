@@ -7,6 +7,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
 import { Divider, FormControl, FormHelperText, InputLabel, List, MenuItem, Pagination, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
 
 interface IBook {
@@ -28,13 +29,13 @@ interface IBook {
 
 function BookListItem(
   {book, onGetDetails,}: {book: IBook; onGetDetails: ({book}: {book: IBook}) => void;}) {
-  const noImage = "https://i.ibb.co/1J2FMZJ/NoImage.png";
+  const noImage = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
   return (
     <ListItem onClick={() => onGetDetails({book})}>
+        <Card sx={{position: "relative", width: "50em"}}>
         <ListItemAvatar>
-            <Avatar src= {book.image_small_url}
-            variant="square" 
-            sx={{width: "98px", height: "146px", marginRight: "1em", border: "3px solid", borderColor: "secondary.main"}}/>
+            <Box component="img" src= {book.image_url ?? noImage}
+            sx={{float: "left", marginRight: "1em", border: "3px solid", borderColor: "secondary.main"}}/>
         </ListItemAvatar>
         <ListItemText
         primaryTypographyProps={{fontSize: '24px',}}
@@ -42,6 +43,7 @@ function BookListItem(
         primary={"Title: " + `${book.title}`}
         secondary={"By " + `${book.authors}`}
         />
+        </Card>
     </ListItem>      
   );
 }

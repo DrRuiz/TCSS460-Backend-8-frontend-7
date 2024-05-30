@@ -14,7 +14,7 @@ import Card from '@mui/material/Card';
 export default function BottomAppBar() {
     const [value, setValue] = React.useState<number | null>(5);
     const testImage = null;
-    const otherImage = "https://i.ibb.co/1J2FMZJ/NoImage.png";
+    const otherImage = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
   return (
     <React.Fragment>
 <ListItem>

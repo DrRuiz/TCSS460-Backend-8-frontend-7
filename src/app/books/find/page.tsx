@@ -55,50 +55,80 @@ export default function Find() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [booksPerPage, setBooksPerPage] = React.useState(10);
   const [lastPage, setLastPage] = React.useState(10);
-  const [requestType, setRequestType] = React.useState('');
-  const [searchLabel, setSearchLabel] = React.useState('Select a category to search for books');
-  const [searchInput, setSearchInput] = React.useState('');
+  const [requestType, setRequestType] = React.useState("");
+  const [searchLabel, setSearchLabel] = React.useState("Select a category to search for books");
+  const [searchInput, setSearchInput] = React.useState("");
+  const [search, setSearch] = React.useState(false);
 
 
-    //Use a look here to get all the data from all the books.
+  //Use a look here to get all the data from all the books.
   React.useEffect(() => {
-    fetch(`http://localhost:4000/books/all2?page=${currentPage}&limit=${booksPerPage}`, {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setBooks(data.books);
-        setLastPage(data.pagination.totalPages);
-      });
-  }, [currentPage, booksPerPage]);
-
-  //Gets the books by title
-  const handleBooksByTitle = () => {
-    fetch(`http://localhost:4000/books/title/${searchInput}/`, {
-      method: "GET",
-    }).then((res) => res.json())
-      .then((data) => {
-        if(data.message){
-          console.log("we are getting the message");
-          setBooks([]);
-          setLastPage(1);
-        } else {
+    if(requestType === ""){
+      fetch(`http://localhost:4000/books/all2?page=${currentPage}&limit=${booksPerPage}`, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((data) => {
           console.log(data);
           setBooks(data.books);
-          setLastPage(1);
-        }
+          setLastPage(data.pagination.totalPages);
+        });
+    }
+  }, [requestType, currentPage, booksPerPage]);
+
+  //Gets the book by title.
+  React.useEffect(() => {
+    if(requestType === "relative title" && search === true){
+      fetch(`http://localhost:4000/books/title2/hunger/?page=${currentPage}&limit=${booksPerPage}`, {
+        method: "GET",
       })
-  };
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(searchInput);
+          console.log(data);
+          if(data.message){
+            setBooks([]);
+            setLastPage(1);
+          } else {
+            setBooks(data.books);
+            setLastPage(data.pagination.totalPages);
+            setSearch(false);
+          }
+          console.log(books);
+        });
+    }
+  }, [search, currentPage, booksPerPage]);
+
+  //Gets the books by title
+  // const handleBooksByRelativeTitle = () => {
+  //   fetch(`http://localhost:4000/books/title2/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
+  //     method: "GET",
+  //   }).then((res) => res.json())
+  //     .then((data) => {
+  //       if(data.message){
+  //         setBooks([]);
+  //         setLastPage(1);
+  //       } else {
+  //         console.log(requestType);
+  //         console.log(searchInput);
+  //         console.log(searchLabel);
+  //         console.log(data);
+  //         setBooks(data.books);
+  //         setLastPage(data.pagination.totalPages);
+  //       }
+  //     })
+  // };
 
   const handleSearch = () => {
     //This is to see what to search for
-    if (requestType == "title"){
-      console.log(requestType);
-      handleBooksByTitle();
+    // if (requestType == "title"){
+    //   console.log(requestType);
+    //   handleBooksByTitle();
 
-    } 
-  //   else if (event.target.value == "relative title"){
-  //     setSearchLabel("Type the book's relative title");
+    // } 
+    if (requestType == "relative title"){
+      setSearch(true);
+
   //   } else if (event.target.value == "isbn"){
   //     setSearchLabel("Type the book's isbn");
   //   } else if (event.target.value == "relative author"){
@@ -107,7 +137,7 @@ export default function Find() {
   //     setSearchLabel("Type the book's relative rating");
   //   } else if (event.target.value == "release year"){
   //     setSearchLabel("Type the book's release year");
-  //   }
+    }
   }
 
   //Loads the details page
@@ -137,11 +167,12 @@ export default function Find() {
     //This is to change the label in the search box
     if(event.target.value == ""){
       setSearchLabel("Select a category to search for books");
-    } else if (event.target.value == "title"){
-      setSearchLabel("Type the book's title");
+    // } else if (event.target.value == "title"){
+    //   setSearchLabel("Type the book's title");
 
     } else if (event.target.value == "relative title"){
       setSearchLabel("Type the book's relative title");
+
     } else if (event.target.value == "isbn"){
       setSearchLabel("Type the book's isbn");
     } else if (event.target.value == "relative author"){
@@ -176,7 +207,7 @@ export default function Find() {
                 <MenuItem value="">
                   <em>All books</em>
                 </MenuItem>
-                <MenuItem value={"title"}>Title</MenuItem>
+                {/* <MenuItem value={"title"}>Title</MenuItem> */}
                 <MenuItem value={"relative title"}>Relative Title</MenuItem>
                 <MenuItem value={"isbn"}>Isbn</MenuItem>
                 <MenuItem value={"relative author"}>Relative Author</MenuItem>
@@ -194,7 +225,9 @@ export default function Find() {
               onChange={(event) => setSearchInput(event.target.value)}
             />
 
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearch}>
+            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" 
+            onClick={handleSearch}
+            >
               <SearchIcon color="info"/>
             </IconButton>
           </Paper>

@@ -158,6 +158,62 @@ booksRouter.get('/title/:title', (request: Request, response: Response) => {
 });
 
 /**
+ * @api {get} /books/title2/:title Request to get books by relative titles.
+ *
+ * @apiDescription Request to retrieve all books with relative title.
+ *
+ * @apiName GetByTitle
+ * @apiGroup Book
+ *
+ * @apiQuery {int} page page we're on
+ * @apiQuery {int} limit many book data entry we want to show up in the page
+ *
+ * @apiParam {String} title the title of the book
+ *
+ * @apiSuccess {string} entrie array containing Ibooks
+ *
+ * @apiError (404: Title Not Found) {string} message "No books found with that title
+ *
+ */
+booksRouter.get('/title2/:title', (request: Request, response: Response) => {
+    const page = parseInt(request.query.page as string, 10) || 1;
+    const limit = parseInt(request.query.limit as string, 10) || 10;
+    const offset = (page - 1) * limit;
+    const theQuery =
+        'SELECT * FROM books WHERE title ILIKE $1 LIMIT $2 OFFSET $3';
+    const countQuery = 'SELECT COUNT(*) FROM books';
+    const values = ['%' + request.params.title + '%', limit, offset];
+    pool.query(theQuery, values)
+        .then(async (result) => {
+            const countBooks = await pool.query(countQuery);
+            const totalBooks = parseInt(countBooks.rows[0].count, 10);
+            const totalPage = Math.ceil(totalBooks / limit);
+            if (result.rowCount > 0) {
+                response.send({
+                    entries: result.rows,
+                    pagination: {
+                        page: page,
+                        limit: limit,
+                        totalPages: totalPage,
+                    },
+                });
+            } else {
+                response.status(404).send({
+                    message: `No books found with that title`,
+                });
+            }
+        })
+        .catch((error) => {
+            //log the error
+            console.error('DB Query error on GET title/~title');
+            console.error(error);
+            response.status(500).send({
+                message: 'server error - contact support',
+            });
+        });
+});
+
+/**
  * @api {get} /books/SortAZ/ Request to get all books sorting by Alphabetical order.
  *
  * @apiDescription Request to retrieve all books sorted in Alphabetical order.

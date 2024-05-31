@@ -8,7 +8,9 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
-import { Divider, FormControl, FormHelperText, InputLabel, List, MenuItem, Pagination, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
+// import { Divider, FormControl, FormHelperText, InputLabel, List, MenuItem, Pagination, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
+import { Divider, FormControl, FormHelperText, IconButton, InputBase, InputLabel, List, MenuItem, Pagination, Paper, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
 
 interface IBook {
   isbn13: number;
@@ -53,6 +55,9 @@ export default function Find() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [booksPerPage, setBooksPerPage] = React.useState(10);
   const [lastPage, setLastPage] = React.useState(10);
+  const [requestType, setRequestType] = React.useState('');
+  const [searchLabel, setSearchLabel] = React.useState('Select a category to search for books');
+  const [searchInput, setSearchInput] = React.useState('');
 
 
     //Use a look here to get all the data from all the books.
@@ -66,6 +71,44 @@ export default function Find() {
         setLastPage(data.pagination.totalPages);
       });
   }, [currentPage, booksPerPage]);
+
+  //Gets the books by title
+  const handleBooksByTitle = () => {
+    fetch(`http://localhost:4000/books/title/${searchInput}/`, {
+      method: "GET",
+    }).then((res) => res.json())
+      .then((data) => {
+        if(data.message){
+          console.log("we are getting the message");
+          setBooks([]);
+          setLastPage(1);
+        } else {
+          console.log(data);
+          setBooks(data.books);
+          setLastPage(1);
+        }
+      })
+  };
+
+  const handleSearch = () => {
+    //This is to see what to search for
+    if (requestType == "title"){
+      console.log(requestType);
+      handleBooksByTitle();
+
+    } 
+  //   else if (event.target.value == "relative title"){
+  //     setSearchLabel("Type the book's relative title");
+  //   } else if (event.target.value == "isbn"){
+  //     setSearchLabel("Type the book's isbn");
+  //   } else if (event.target.value == "relative author"){
+  //     setSearchLabel("Type the book's relative author");
+  //   } else if (event.target.value == "relative rating"){
+  //     setSearchLabel("Type the book's relative rating");
+  //   } else if (event.target.value == "release year"){
+  //     setSearchLabel("Type the book's release year");
+  //   }
+  }
 
   //Loads the details page
   const handleDetails = (
@@ -87,6 +130,29 @@ export default function Find() {
     setBooksPerPage(parseInt(event.target.value));
   };
 
+  // This handles the change on the type of request to search books.
+  const handleRequestChange = (event: SelectChangeEvent) =>{
+    setRequestType(event.target.value);
+
+    //This is to change the label in the search box
+    if(event.target.value == ""){
+      setSearchLabel("Select a category to search for books");
+    } else if (event.target.value == "title"){
+      setSearchLabel("Type the book's title");
+
+    } else if (event.target.value == "relative title"){
+      setSearchLabel("Type the book's relative title");
+    } else if (event.target.value == "isbn"){
+      setSearchLabel("Type the book's isbn");
+    } else if (event.target.value == "relative author"){
+      setSearchLabel("Type the book's relative author");
+    } else if (event.target.value == "relative rating"){
+      setSearchLabel("Type the book's relative rating");
+    } else if (event.target.value == "release year"){
+      setSearchLabel("Type the book's release year");
+    }
+  }
+
   return (
     <Container>
       <Box
@@ -95,47 +161,84 @@ export default function Find() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-          }}
-      >
+          }}>
+        <Box>
+          <Paper
+            component="form"
+            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 600, backgroundColor: '#44475a' }}>
+            <FormControl variant="filled" sx={{ m: 1, minWidth: 170 }}>
+              <InputLabel style={{color: '#8be9fd'}}id="search-books-label">Search books by</InputLabel>
+              <Select
+                labelId="search-books-label"
+                id="search-books"
+                value={requestType}
+                onChange={handleRequestChange}>
+                <MenuItem value="">
+                  <em>All books</em>
+                </MenuItem>
+                <MenuItem value={"title"}>Title</MenuItem>
+                <MenuItem value={"relative title"}>Relative Title</MenuItem>
+                <MenuItem value={"isbn"}>Isbn</MenuItem>
+                <MenuItem value={"relative author"}>Relative Author</MenuItem>
+                <MenuItem value={"relative rating"}>Relative Rating</MenuItem>
+                <MenuItem value={"release year"}>Release Year</MenuItem>
+              </Select>
+            </FormControl>
+
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              // disabled={requestType == ""? true : false}
+              placeholder= {searchLabel}
+              inputProps={{ 'aria-label': 'search books'}}
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+            />
+
+            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearch}>
+              <SearchIcon color="info"/>
+            </IconButton>
+          </Paper>
+        </Box>
+
         <Box sx={{ mt: 1 }}>
           <List>
-            {books.map((book, index, books) => (
+            {books && books.map((book, index, books) => (
               <React.Fragment key={"book list item: " + index}>
-                <BookListItem book={book} onGetDetails={handleDetails} />
-                {index < books.length - 1 && (
-                  <Divider variant="middle" component="li" />
-                )}
+                <Card style={{marginBottom: index < books.length - 1 ? 16 : 0}}>
+                  <BookListItem book={book} onGetDetails={handleDetails} />
+                </Card>
               </React.Fragment>
             ))}
           </List>
         </Box>
-          <Stack spacing={2}>
-            <Box sx={{display: "flex", Direction: "row",}}>
-              <FormControl sx={{ m: 1, minWidth: 120 }}>
-                <Select
-                  value={String(booksPerPage)}
-                  onChange={handleBooksPerPageChange}
-                  displayEmpty
-                  inputProps={{ 'aria-label': 'Books per page' }}
-                >
-                  <MenuItem value={10}>10</MenuItem>
-                  <MenuItem value={20}>20</MenuItem>
-                  <MenuItem value={30}>30</MenuItem>
-                  <MenuItem value={50}>50</MenuItem>
-                  <MenuItem value={100}>100</MenuItem>
-               </Select>
+
+        <Stack spacing={2}>
+          <Box sx={{display: "flex", Direction: "row",}}>
+            <FormControl sx={{ m: 1, minWidth: 120 }}>
+              <Select
+                value={String(booksPerPage)}
+                onChange={handleBooksPerPageChange}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Books per page' }}>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={20}>20</MenuItem>
+                <MenuItem value={30}>30</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
               <FormHelperText>Books Per Page</FormHelperText>
-              </FormControl>
-              <FormControl sx={{mt:2.5,}}>
-                <Pagination 
-                  count={lastPage} 
-                  page={currentPage}
-                  onChange={handleCurrentPageChange}
-                  color="primary" />
-              </FormControl>
-            </Box>
-          </Stack>
-        </Box>
+            </FormControl>
+
+            <FormControl sx={{mt:2.5,}}>
+              <Pagination 
+                count={lastPage} 
+                page={currentPage}
+                onChange={handleCurrentPageChange}
+                color="primary" />
+             </FormControl>
+          </Box>
+        </Stack>
+      </Box>
     </Container>
     
   );

@@ -82,7 +82,7 @@ interface IAlert {
   alertMessage: string;
   alertSeverity: string;
 }
-let displayedBook: IBook
+let displayedBook: IBook | null
 
 const EMPTY_ALERT: IAlert = {
   showAlert: false,
@@ -148,6 +148,7 @@ export default function addRating() {
             alertMessage: "Rating Not Updated!" + res.body.message,
             alertSeverity: "error",
           });
+          displayedBook = null;
         }
         return;
       });
@@ -187,7 +188,7 @@ export default function addRating() {
               InputLabelProps={{sx: {p: -10, color:'info.main'}}}
               inputProps={{sx: {borderColor: 'info.main'}}}
             />
-        <Typography sx={{fontSize: '14px'}} paddingLeft={1.5}>
+        <Typography sx={{fontSize: '14px'}}>
             <Rating 
               name="star"
               id="star"

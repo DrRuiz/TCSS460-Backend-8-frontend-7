@@ -552,7 +552,7 @@ booksRouter.get('/isbn/:isbn13', (request: Request, response: Response) => {
 
             if (result.rowCount == 1) {
                 response.send({
-                    entries: result.rows[0],
+                    entries: result.rows,
                     pagination: {
                         page: page,
                         limit: limit,
@@ -679,49 +679,6 @@ booksRouter.put(
         } catch (err) {
             console.error('Error updating book rating:', err);
             response.status(500).send('Internal Server Error');
-        }
-    }
-);
-
-/**
- * @api {get} /books/all/:authors Request to get books by a relative author name.
- *
- * @apiDescription Request to retrieve all books with relative author name.
- *
- * @apiName GetByAuthor
- * @apiGroup Book
- *
- * @apiParam {String} authors the author of the book
- *
- * @apiSuccess {string} title the title of the book
- * @apiSuccess {int} publication_year the year the book was published
- * @apiSuccess {string} authors the authors of the book
- *
- * @apiError (404: Name Not Found) {string} message "No books found by that author
- *
- */
-booksRouter.get(
-    '/all/:authors',
-    async (request: Request, response: Response) => {
-        const theQuery =
-            'SELECT title, authors, publication_year FROM books WHERE authors ILIKE $1';
-        const values = ['%' + request.params.authors + '%'];
-
-        try {
-            const result = await pool.query(theQuery, values);
-            if (result.rowCount > 0) {
-                response.status(200).send(result.rows);
-            } else {
-                response.status(404).send({
-                    message: 'No books found by that author',
-                });
-            }
-        } catch (error) {
-            console.error('DB Query error on GET author/:authors');
-            console.error(error);
-            response.status(500).send({
-                message: 'Server error - contact support',
-            });
         }
     }
 );

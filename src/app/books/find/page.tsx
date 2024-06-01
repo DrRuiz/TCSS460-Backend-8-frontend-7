@@ -58,8 +58,6 @@ export default function Find() {
   const [requestType, setRequestType] = React.useState("");
   const [searchLabel, setSearchLabel] = React.useState("Select a category to search for books");
   const [searchInput, setSearchInput] = React.useState("");
-  // const [search, setSearch] = React.useState(false);
-
 
   //Use a look here to get all the data from all the books.
   React.useEffect(() => {
@@ -75,7 +73,7 @@ export default function Find() {
     }
   }, [requestType, currentPage, booksPerPage]);
 
-  //Gets the book by title.
+  //User effect for the get by relative title
   React.useEffect(() => {
     if(requestType === "relative title"){
       fetch(`http://localhost:4000/books/title2/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
@@ -89,33 +87,86 @@ export default function Find() {
           } else {
             setBooks(data.entries);
             setLastPage(data.pagination.totalPages);
-            // setSearch(false);
           }
-          console.log(books);
         });
     }
   }, [searchInput, currentPage, booksPerPage]);
 
-  const handleSearch = () => {
-    //This is to see what to search for
-    // if (requestType == "title"){
-    //   console.log(requestType);
-    //   handleBooksByTitle();
-
-    // } 
-    if (requestType == "relative title"){
-      // setSearch(true);
-
-  //   } else if (event.target.value == "isbn"){
-  //     setSearchLabel("Type the book's isbn");
-  //   } else if (event.target.value == "relative author"){
-  //     setSearchLabel("Type the book's relative author");
-  //   } else if (event.target.value == "relative rating"){
-  //     setSearchLabel("Type the book's relative rating");
-  //   } else if (event.target.value == "release year"){
-  //     setSearchLabel("Type the book's release year");
+  //User effect for the get by ISBN
+  React.useEffect(() => {
+    if(requestType === "isbn"){
+      fetch(`http://localhost:4000/books/isbn/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if(data.message){
+            setBooks([]);
+            setLastPage(1);
+          } else {
+            setBooks(data.entries);
+            setLastPage(data.pagination.totalPages);
+          }
+        });
     }
-  }
+  }, [searchInput, currentPage, booksPerPage]);
+
+  //User effect for the get by relative author
+  React.useEffect(() => {
+    if(requestType === "relative author"){
+      fetch(`http://localhost:4000/books/all/author/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if(data.message){
+            setBooks([]);
+            setLastPage(1);
+          } else {
+            setBooks(data.entries);
+            setLastPage(data.pagination.totalPages);
+          }
+        });
+    }
+  }, [searchInput, currentPage, booksPerPage]);
+
+    //User effect for the get by relative rating
+    React.useEffect(() => {
+      if(requestType === "relative rating"){
+        fetch(`http://localhost:4000/books/rating2/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
+          method: "GET",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if(data.message){
+              setBooks([]);
+              setLastPage(1);
+            } else {
+              setBooks(data.entries);
+              setLastPage(data.pagination.totalPages);
+            }
+          });
+      }
+    }, [searchInput, currentPage, booksPerPage]);
+
+        //User effect for the get by release year
+        React.useEffect(() => {
+          if(requestType === "release year"){
+            fetch(`http://localhost:4000/books/year2/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
+              method: "GET",
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if(data.message){
+                  setBooks([]);
+                  setLastPage(1);
+                } else {
+                  setBooks(data.entries);
+                  setLastPage(data.pagination.totalPages);
+                }
+              });
+          }
+        }, [searchInput, currentPage, booksPerPage]);
 
   //Loads the details page
   const handleDetails = (
@@ -144,18 +195,19 @@ export default function Find() {
     //This is to change the label in the search box
     if(event.target.value == ""){
       setSearchLabel("Select a category to search for books");
-    // } else if (event.target.value == "title"){
-    //   setSearchLabel("Type the book's title");
 
     } else if (event.target.value == "relative title"){
       setSearchLabel("Type the book's relative title");
 
     } else if (event.target.value == "isbn"){
       setSearchLabel("Type the book's isbn");
+
     } else if (event.target.value == "relative author"){
       setSearchLabel("Type the book's relative author");
+
     } else if (event.target.value == "relative rating"){
       setSearchLabel("Type the book's relative rating");
+
     } else if (event.target.value == "release year"){
       setSearchLabel("Type the book's release year");
     }
@@ -202,11 +254,11 @@ export default function Find() {
               onChange={(event) => setSearchInput(event.target.value)}
             />
 
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" 
+            {/* <IconButton type="button" sx={{ p: '10px' }} aria-label="search" 
             onClick={handleSearch}
             >
               <SearchIcon color="info"/>
-            </IconButton>
+            </IconButton> */}
           </Paper>
         </Box>
 

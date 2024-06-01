@@ -10,7 +10,7 @@ import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 // import { Divider, FormControl, FormHelperText, InputLabel, List, MenuItem, Pagination, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import { Divider, FormControl, FormHelperText, IconButton, InputBase, InputLabel, List, MenuItem, Pagination, Paper, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
+import { Divider, FormControl, FormControlLabel, FormHelperText, FormLabel, IconButton, InputBase, InputLabel, List, MenuItem, Pagination, Paper, Radio, RadioGroup, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
 
 interface IBook {
   isbn13: number;
@@ -58,10 +58,39 @@ export default function Find() {
   const [requestType, setRequestType] = React.useState("");
   const [searchLabel, setSearchLabel] = React.useState("Select a category to search for books");
   const [searchInput, setSearchInput] = React.useState("");
+  const [releaseYearOption, setReleaseYearOption] = React.useState("");
+  const [allBooksOption, setAllBooksOption] = React.useState("");
 
-  //Use a look here to get all the data from all the books.
+  //User effect for getting all the books.
   React.useEffect(() => {
-    if(requestType === ""){
+    if(requestType === "" && allBooksOption === "alphabetical title"){
+      fetch(`http://localhost:4000/books/SortAZ?page=${currentPage}&limit=${booksPerPage}`, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setBooks(data.entries);
+          setLastPage(data.pagination.totalPages);
+        });
+    } else if(requestType === "" && allBooksOption === "new to old publication date"){
+      fetch(`http://localhost:4000/books/date/SortNewest2/?page=${currentPage}&limit=${booksPerPage}`, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setBooks(data.entries);
+          setLastPage(data.pagination.totalPages);
+        });
+    } else if(requestType === "" && allBooksOption === "old to new publication date"){
+      fetch(`http://localhost:4000/books/date/SortOldest2/?page=${currentPage}&limit=${booksPerPage}`, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setBooks(data.entries);
+          setLastPage(data.pagination.totalPages);
+        });
+    } else if(requestType === ""){
       fetch(`http://localhost:4000/books/all2?page=${currentPage}&limit=${booksPerPage}`, {
         method: "GET",
       })
@@ -71,7 +100,7 @@ export default function Find() {
           setLastPage(data.pagination.totalPages);
         });
     }
-  }, [requestType, currentPage, booksPerPage]);
+  }, [requestType, currentPage, booksPerPage, allBooksOption]);
 
   //User effect for the get by relative title
   React.useEffect(() => {
@@ -151,7 +180,35 @@ export default function Find() {
 
         //User effect for the get by release year
         React.useEffect(() => {
-          if(requestType === "release year"){
+          if(requestType === "release year" && releaseYearOption === "newer than this release year"){
+            fetch(`http://localhost:4000/books/year/${searchInput}/newer2/?page=${currentPage}&limit=${booksPerPage}`, {
+              method: "GET",
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if(data.message){
+                  setBooks([]);
+                  setLastPage(1);
+                } else {
+                  setBooks(data.entries);
+                  setLastPage(data.pagination.totalPages);
+                }
+              });
+          } else if(requestType === "release year" && releaseYearOption === "older than this release year"){
+            fetch(`http://localhost:4000/books/year/${searchInput}/older2/?page=${currentPage}&limit=${booksPerPage}`, {
+              method: "GET",
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if(data.message){
+                  setBooks([]);
+                  setLastPage(1);
+                } else {
+                  setBooks(data.entries);
+                  setLastPage(data.pagination.totalPages);
+                }
+              });
+          } else if(requestType === "release year"){
             fetch(`http://localhost:4000/books/year2/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
               method: "GET",
             })
@@ -166,7 +223,7 @@ export default function Find() {
                 }
               });
           }
-        }, [searchInput, currentPage, booksPerPage]);
+        }, [searchInput, currentPage, booksPerPage, releaseYearOption]);
 
   //Loads the details page
   const handleDetails = (
@@ -195,6 +252,7 @@ export default function Find() {
     //This is to change the label in the search box
     if(event.target.value == ""){
       setSearchLabel("Select a category to search for books");
+      setAllBooksOption("");
 
     } else if (event.target.value == "relative title"){
       setSearchLabel("Type the book's relative title");
@@ -210,8 +268,19 @@ export default function Find() {
 
     } else if (event.target.value == "release year"){
       setSearchLabel("Type the book's release year");
+      setReleaseYearOption("");
     }
   }
+
+    //Handles the change of books per page.
+    const handleReleaseYearOptions = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setReleaseYearOption((event.target as HTMLInputElement).value);
+    };
+
+        //Handles the change of books per page.
+    const handleAllBooksOptions = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setAllBooksOption((event.target as HTMLInputElement).value);
+    };
 
   return (
     <Container>
@@ -227,7 +296,7 @@ export default function Find() {
             component="form"
             sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 600, backgroundColor: '#44475a' }}>
             <FormControl variant="filled" sx={{ m: 1, minWidth: 170 }}>
-              <InputLabel style={{color: '#8be9fd'}}id="search-books-label">Search books by</InputLabel>
+              <InputLabel style={{color: '#8be9fd'}} id="search-books-label">Search books by</InputLabel>
               <Select
                 labelId="search-books-label"
                 id="search-books"
@@ -262,7 +331,34 @@ export default function Find() {
           </Paper>
         </Box>
 
-        <Box sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1, display: "flex", flexDirection: "row"}}>
+          <FormControl sx={{mr: 8}}>
+          <FormLabel sx={{mt: 2}} style={{color: '#8be9fd'}} id="release year radio buttons">All Books Options (available when searching by all books)</FormLabel>
+            <RadioGroup
+              sx={{mt: 1, ml: 2, mb: 2}}
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="controlled-radio-buttons-group"
+              value= {requestType !== "" ? "disabled" : allBooksOption}
+              onChange={handleAllBooksOptions}
+            >
+              <FormControlLabel value="alphabetical title" control={<Radio />} label="Sort book titles alphabetically" />
+              <FormControlLabel value="new to old publication date" control={<Radio />} label="Sort book publication dates from newest to oldest" />
+              <FormControlLabel value="old to new publication date" control={<Radio />} label="Sort book publication dates form oldest to newest" />
+            </RadioGroup>
+            <Divider style={{backgroundColor: 'white'}} />
+            <FormLabel sx={{mr: 2, mt: 2}} style={{color: '#8be9fd'}} id="release year radio buttons">Released Year Options (available when searching by release year)</FormLabel>
+            <RadioGroup
+              sx={{mt: 1, ml: 2, mb:2}}
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="controlled-radio-buttons-group"
+              value= {requestType !== "release year" ? "disabled" : releaseYearOption}
+              onChange={handleReleaseYearOptions}
+            >
+              <FormControlLabel value="this release year" control={<Radio />} label="Books of this release year" />
+              <FormControlLabel value="newer than this release year" control={<Radio />} label="Books newer than this release year" />
+              <FormControlLabel value="older than this release year" control={<Radio />} label="Books older than this release year" />
+            </RadioGroup>
+          </FormControl>
           <List>
             {books && books.map((book, index, books) => (
               <React.Fragment key={"book list item: " + index}>

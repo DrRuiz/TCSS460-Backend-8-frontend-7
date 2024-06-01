@@ -7,6 +7,7 @@ import Rating from '@mui/material/Rating';
 import { FormState, addRatingFormSchema } from "./definitions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
 
 interface IBook {
   authors: string;
@@ -29,7 +30,7 @@ interface IBook {
 function BookListItem({book}: {book: IBook}) {
   const [value, setValue] = React.useState<number | null>(5);
   return (
-    <Container sx={{position: "absolute", left: "0%"}}>
+    <Container sx={{}}>
       <Box component="img" src={book.image_url}
       sx={{border: "3px solid", borderColor: "secondary.main", float: "left", marginRight: "1em"}} 
       />
@@ -44,7 +45,7 @@ function BookListItem({book}: {book: IBook}) {
       <br />
       <br />
       </Typography> */}
-      <Typography sx={{fontSize: '12px', color: "text.secondary"}}>
+      <Typography sx={{fontSize: '12px'}}>
       ISBN: {book.isbn13}
       <br />
       <br />
@@ -60,22 +61,17 @@ function BookListItem({book}: {book: IBook}) {
       {/* <Typography sx={{fontSize: '14px'}}>
       Total Ratings: {book.ratings.count} / Average Rating: {book.ratings.average}
       </Typography> */}
-      <Typography sx={{fontSize: '14px'}}>
+      <Typography sx={{fontSize: '14px', color: "success.main"}}>
       Total Ratings: {book.rating_count} / Average Rating: {book.rating_avg}
       </Typography>
-      <Typography sx={{fontSize: '14px'}}>
+      <Typography sx={{fontSize: '14px', paddingLeft: '0px'}}>
       <Rating 
         name='book-rating'
         value={value}
         onChange={(event, newVal) => {
           setValue(newVal);
         }}
-    />
-      </Typography>
-      <Typography sx={{fontSize: '14px'}}>
-        <Rating 
-        name='book-rating'
-        />
+      />
       </Typography>
     </Container>
   );
@@ -86,24 +82,7 @@ interface IAlert {
   alertMessage: string;
   alertSeverity: string;
 }
-
-let displayedBook: IBook = {
-  authors: "",
-  id: 0,
-  image_small_url: "",
-  image_url: "",
-  isbn13: "",
-  original_title: "",
-  publication_year: 0,
-  rating_1_star: 0,
-  rating_2_star: 0,
-  rating_3_star: 0,
-  rating_4_star: 0,
-  rating_5_star: 0,
-  rating_avg: 0,
-  rating_count: 0,
-  title: ""
-};
+let displayedBook: IBook
 
 const EMPTY_ALERT: IAlert = {
   showAlert: false,
@@ -113,6 +92,7 @@ const EMPTY_ALERT: IAlert = {
 
 export default function addRating() {
   const [formState, setFormState] = React.useState<FormState>();
+  const [value, setValue] = React.useState<number | null>(5);
   const [alert, setAlert] = React.useState(EMPTY_ALERT);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -174,14 +154,23 @@ export default function addRating() {
   };
 
   return (
-    <Container>
+    
+    <Container maxWidth="sm" sx={{border: "3px solid", borderColor: "text.secondary", float: "middle", color: "info.main", backgroundColor: "text.main"}} >
+      {alert.showAlert && (
+        <Alert
+          severity={alert.alertSeverity as any}
+          onClose={() => setAlert(EMPTY_ALERT)}
+        >
+          {alert.alertMessage}
+        </Alert>
+      )}
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, p: 10 ,color: "info.main", backgroundColor: "text.main"}}
           >
-        <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: "center"}} color='info.main'>
+        <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: "center"}} color='success.primary' fontSize={32}>
           Add Rating to a Book
         </Typography>
 
@@ -195,28 +184,43 @@ export default function addRating() {
               label="ISBN13 Number: "
               name="isbn13"
               autoFocus
+              InputLabelProps={{sx: {p: -10, color:'info.main'}}}
+              inputProps={{sx: {borderColor: 'info.main'}}}
             />
-            <TextField
-              error={formState?.errors?.star != undefined}
-              helperText={formState?.errors?.star ?? ""}
-              margin="normal"
-              required
-              fullWidth
-              id="star"
-              label="Rating (1-5) : "
+        <Typography sx={{fontSize: '14px'}} paddingLeft={1.5}>
+            <Rating 
               name="star"
+              id="star"
+              defaultValue={4}
+              value={value}
+              onChange={(event, newVal) => {
+                setValue(newVal);
+              }}
+
             />
+        </Typography>
+          <Box sx={{fontSize: '14px'}} paddingLeft={2}>
+          
+          {value == 1 ? '1 Star - Worst Book Ever!' : ""}
+          {value == 2 ? '2 Stars - I dislike This Book' : ""}
+          {value == 3 ? '3 Stars - Not So good Not So Bad' : ""}
+          {value == 4 ? '4 Stars - Great Book' : ""}
+          {value == 5 ? '5 Stars - I Love This Book!' : ""}
+          </Box>
 
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2 , color: 'info.main', backgroundColor: 'secondary.main'}}
             >
               Add Rating
             </Button>
+
+            {displayedBook && <BookListItem book={displayedBook}/>}
+
       </Box>
-      <BookListItem book={displayedBook} />
+
     </Container>
   );
 }

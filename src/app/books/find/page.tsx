@@ -58,7 +58,7 @@ export default function Find() {
   const [requestType, setRequestType] = React.useState("");
   const [searchLabel, setSearchLabel] = React.useState("Select a category to search for books");
   const [searchInput, setSearchInput] = React.useState("");
-  const [search, setSearch] = React.useState(false);
+  // const [search, setSearch] = React.useState(false);
 
 
   //Use a look here to get all the data from all the books.
@@ -69,7 +69,6 @@ export default function Find() {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setBooks(data.books);
           setLastPage(data.pagination.totalPages);
         });
@@ -78,46 +77,24 @@ export default function Find() {
 
   //Gets the book by title.
   React.useEffect(() => {
-    if(requestType === "relative title" && search === true){
-      fetch(`http://localhost:4000/books/title2/hunger/?page=${currentPage}&limit=${booksPerPage}`, {
+    if(requestType === "relative title"){
+      fetch(`http://localhost:4000/books/title2/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
         method: "GET",
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(searchInput);
-          console.log(data);
           if(data.message){
             setBooks([]);
             setLastPage(1);
           } else {
-            setBooks(data.books);
+            setBooks(data.entries);
             setLastPage(data.pagination.totalPages);
-            setSearch(false);
+            // setSearch(false);
           }
           console.log(books);
         });
     }
-  }, [search, currentPage, booksPerPage]);
-
-  //Gets the books by title
-  // const handleBooksByRelativeTitle = () => {
-  //   fetch(`http://localhost:4000/books/title2/${searchInput}/?page=${currentPage}&limit=${booksPerPage}`, {
-  //     method: "GET",
-  //   }).then((res) => res.json())
-  //     .then((data) => {
-  //       if(data.message){
-  //         setBooks([]);
-  //         setLastPage(1);
-  //       } else {
-  //         console.log(requestType);
-  //         console.log(searchInput);
-  //         console.log(searchLabel);
-  //         console.log(data);
-  //         setBooks(data.books);
-  //         setLastPage(data.pagination.totalPages);
-  //       }
-  //     })
-  // };
+  }, [searchInput, currentPage, booksPerPage]);
 
   const handleSearch = () => {
     //This is to see what to search for
@@ -127,7 +104,7 @@ export default function Find() {
 
     // } 
     if (requestType == "relative title"){
-      setSearch(true);
+      // setSearch(true);
 
   //   } else if (event.target.value == "isbn"){
   //     setSearchLabel("Type the book's isbn");

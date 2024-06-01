@@ -6,11 +6,10 @@ import Box from "@mui/material/Box";
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
-// import { Divider, FormControl, FormHelperText, InputLabel, List, MenuItem, Pagination, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import { Divider, FormControl, FormControlLabel, FormHelperText, FormLabel, IconButton, InputBase, InputLabel, List, MenuItem, Pagination, Paper, Radio, RadioGroup, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import { Dialog, DialogContent, DialogTitle, Divider, FormControl, FormControlLabel, FormHelperText, FormLabel, IconButton, InputBase, InputLabel, List, MenuItem, Pagination, Paper, Radio, RadioGroup, Select, SelectChangeEvent, Stack, TextField, styled } from "@mui/material";
+import { Widgets } from "@mui/icons-material";
 
 interface IBook {
   isbn13: number;
@@ -49,6 +48,16 @@ function BookListItem(
     </ListItem>      
   );
 }
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
 export default function Find() {
 
   const [books, setBooks] = React.useState<IBook[]>([]);
@@ -60,6 +69,8 @@ export default function Find() {
   const [searchInput, setSearchInput] = React.useState("");
   const [releaseYearOption, setReleaseYearOption] = React.useState("");
   const [allBooksOption, setAllBooksOption] = React.useState("");
+  const [openDetails, setOpenDetails] = React.useState(false);
+  const [currentBook, setCurrentBook] = React.useState<IBook>();
 
   //User effect for getting all the books.
   React.useEffect(() => {
@@ -226,13 +237,23 @@ export default function Find() {
         }, [searchInput, currentPage, booksPerPage, releaseYearOption]);
 
   //Loads the details page
-  const handleDetails = (
-    {book}: {book: IBook}) => {
-    // fetch("http://localhost:4000/bookDetails/" + {/*Book title? */}, {
-    //   method: "GET", // *GET, POST, PUT, DELETE, etc.
-    // }).then(
-    //   // (res) => res.ok && setMessages(messages.filter((msg) => msg.name != name))
-    // );
+  // const handleDetails = ({book}: {book: IBook}) => {
+  //   // fetch("http://localhost:4000/bookDetails/" + {/*Book title? */}, {
+  //   //   method: "GET", // *GET, POST, PUT, DELETE, etc.
+  //   // }).then(
+  //   //   // (res) => res.ok && setMessages(messages.filter((msg) => msg.name != name))
+  //   // );
+  // };
+
+  //Handles the opening of the details
+  const handleOpenDetails = ({book}: {book: IBook}) => {
+    setOpenDetails(true);
+    setCurrentBook(book);
+  };
+
+  //Handles the closing of the details
+  const handleCloseDetails = () => {
+    setOpenDetails(false);
   };
 
   //Handles the change of the page we are in.
@@ -363,11 +384,76 @@ export default function Find() {
             {books && books.map((book, index, books) => (
               <React.Fragment key={"book list item: " + index}>
                 <Card style={{marginBottom: index < books.length - 1 ? 16 : 0}}>
-                  <BookListItem book={book} onGetDetails={handleDetails} />
+                  <BookListItem book={book} onGetDetails={handleOpenDetails} />
                 </Card>
               </React.Fragment>
             ))}
           </List>
+
+          <React.Fragment>
+            <BootstrapDialog
+              onClose={handleCloseDetails}
+              aria-labelledby="customized-dialog-title"
+              open={openDetails}
+            >
+              <DialogTitle sx={{ m: 0, p: 2 }} id="Book's title">
+                {currentBook?.title}
+              </DialogTitle>
+              <IconButton
+                aria-label="close"
+                onClick={handleCloseDetails}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.primary,
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+              <DialogContent dividers sx={{width: "35vw", display: 'flex', alignItems: 'center' }}>
+                <div style={{ flex: 1 }}>
+                  <Typography gutterBottom>
+                    ISBN: {currentBook?.isbn13}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Authors: {currentBook?.authors}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Publication Year: {currentBook?.publication_year}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Original Title: {currentBook?.original_title}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Title: {currentBook?.title}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Average Rating: {currentBook?.rating_avg}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Total ratings: {currentBook?.rating_count}
+                  </Typography>
+                  <Typography gutterBottom>
+                    One Star Ratings: {currentBook?.rating_1_star}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Two Star Ratings: {currentBook?.rating_2_star}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Three Star Ratings: {currentBook?.rating_3_star}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Four Star Ratings: {currentBook?.rating_4_star}
+                  </Typography>
+                  <Typography gutterBottom>
+                    Five Star Ratings: {currentBook?.rating_5_star}
+                  </Typography>
+                </div>
+                <img src={currentBook?.image_url} alt="The book's cover" style={{width: '200px', height: '300px', marginLeft: '10px'}} />
+              </DialogContent>
+            </BootstrapDialog>
+          </React.Fragment>
         </Box>
 
         <Stack spacing={2}>

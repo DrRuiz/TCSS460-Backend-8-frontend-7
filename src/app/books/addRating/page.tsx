@@ -64,7 +64,7 @@ function BookListItem({book}: {book: IBook}) {
       <Typography sx={{fontSize: '14px', color: "success.main"}}>
       Total Ratings: {book.rating_count}
       </Typography>
-      <Typography sx={{fontSize: '14px', paddingLeft: '0px', display: 'fiex'}}>
+      <Typography sx={{fontSize: '14px', paddingLeft: '0px', display: 'fiex', color: "success.main"}}>
       Average Rating: {book.rating_avg.toFixed(2)}
       <Rating 
         name='book-rating'

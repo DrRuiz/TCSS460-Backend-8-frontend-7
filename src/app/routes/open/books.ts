@@ -412,56 +412,58 @@ booksRouter.put(
                 response.status(404).send({
                     message: 'Book not found',
                 });
+            } else {
+                const book = result.rows[0]; //get the 1 row
+                let star1 = book.rating_1_star;
+                let star2 = book.rating_2_star;
+                let star3 = book.rating_3_star;
+                let star4 = book.rating_4_star;
+                let star5 = book.rating_5_star;
+                // console.log(book);
+    
+                star1 = star1 !== null ? star1 : 0;
+                star2 = star2 !== null ? star2 : 0;
+                star3 = star3 !== null ? star3 : 0;
+                star4 = star4 !== null ? star4 : 0;
+                star5 = star5 !== null ? star5 : 0;
+                // Calculate new star ratings. The star number the user choose, we'll increment it by one.
+                const newStar1 = starInserted == 1 ? star1 + 1 : star1;
+                const newStar2 = starInserted == 2 ? star2 + 1 : star2;
+                const newStar3 = starInserted == 3 ? star3 + 1 : star3;
+                const newStar4 = starInserted == 4 ? star4 + 1 : star4;
+                const newStar5 = starInserted === 5 ? star5 + 1 : star5;
+    
+                // Calculate new average rating
+                const totalRatings =
+                    1 * newStar1 +
+                    2 * newStar2 +
+                    3 * newStar3 +
+                    4 * newStar4 +
+                    5 * newStar5;
+                const totalStars =
+                    newStar1 + newStar2 + newStar3 + newStar4 + newStar5; // Sum of stars from star 1 to star 5
+                const newAverageRating = totalRatings / totalStars; //will calculate the new average rating after adding a star.
+    
+                // Update the star ratings and average rating in the database
+                const updateResult = await pool.query(
+                    'UPDATE books SET rating_1_star = $1, rating_2_star = $2, rating_3_star = $3, rating_4_star = $4, rating_5_star = $5, rating_avg = $6, rating_count = $7 WHERE isbn13 = CAST($8 AS BIGINT) RETURNING *',
+                    [
+                        newStar1,
+                        newStar2,
+                        newStar3,
+                        newStar4,
+                        newStar5,
+                        newAverageRating,
+                        totalStars,
+                        isbn,
+                    ]
+                );
+    
+                response.status(200).send({
+                    book: updateResult.rows[0],
+                });
             }
-            const book = result.rows[0]; //get the 1 row
-            let star1 = book.rating_1_star;
-            let star2 = book.rating_2_star;
-            let star3 = book.rating_3_star;
-            let star4 = book.rating_4_star;
-            let star5 = book.rating_5_star;
-            // console.log(book);
-
-            star1 = star1 !== null ? star1 : 0;
-            star2 = star2 !== null ? star2 : 0;
-            star3 = star3 !== null ? star3 : 0;
-            star4 = star4 !== null ? star4 : 0;
-            star5 = star5 !== null ? star5 : 0;
-            // Calculate new star ratings. The star number the user choose, we'll increment it by one.
-            const newStar1 = starInserted == 1 ? star1 + 1 : star1;
-            const newStar2 = starInserted == 2 ? star2 + 1 : star2;
-            const newStar3 = starInserted == 3 ? star3 + 1 : star3;
-            const newStar4 = starInserted == 4 ? star4 + 1 : star4;
-            const newStar5 = starInserted === 5 ? star5 + 1 : star5;
-
-            // Calculate new average rating
-            const totalRatings =
-                1 * newStar1 +
-                2 * newStar2 +
-                3 * newStar3 +
-                4 * newStar4 +
-                5 * newStar5;
-            const totalStars =
-                newStar1 + newStar2 + newStar3 + newStar4 + newStar5; // Sum of stars from star 1 to star 5
-            const newAverageRating = totalRatings / totalStars; //will calculate the new average rating after adding a star.
-
-            // Update the star ratings and average rating in the database
-            const updateResult = await pool.query(
-                'UPDATE books SET rating_1_star = $1, rating_2_star = $2, rating_3_star = $3, rating_4_star = $4, rating_5_star = $5, rating_avg = $6, rating_count = $7 WHERE isbn13 = CAST($8 AS BIGINT) RETURNING *',
-                [
-                    newStar1,
-                    newStar2,
-                    newStar3,
-                    newStar4,
-                    newStar5,
-                    newAverageRating,
-                    totalStars,
-                    isbn,
-                ]
-            );
-
-            response.status(200).send({
-                book: updateResult.rows[0],
-            });
+           
         } catch (err) {
             console.error('Error updating book rating:', err);
             response.status(500).send('Internal Server Error');

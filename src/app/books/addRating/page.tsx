@@ -67,10 +67,9 @@ function BookListItem({book}: {book: IBook}) {
       <Typography sx={{fontSize: '14px', paddingLeft: '0px'}}>
       <Rating 
         name='book-rating'
-        value={value}
-        onChange={(event, newVal) => {
-          setValue(newVal);
-        }}
+        readOnly
+        value={book.rating_avg}
+        precision={.05}
       />
       </Typography>
     </Container>
@@ -82,8 +81,6 @@ interface IAlert {
   alertMessage: string;
   alertSeverity: string;
 }
-let displayedBook: IBook
-
 const EMPTY_ALERT: IAlert = {
   showAlert: false,
   alertMessage: "",
@@ -94,6 +91,7 @@ export default function addRating() {
   const [formState, setFormState] = React.useState<FormState>();
   const [value, setValue] = React.useState<number | null>(5);
   const [alert, setAlert] = React.useState(EMPTY_ALERT);
+  const [displayedBook, setDisplayedBook] = React.useState<IBook | null>(null);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -141,14 +139,16 @@ export default function addRating() {
             alertMessage: "Rating Updated!",
             alertSeverity: "success",
           });
-        displayedBook = res.body.book
+        setDisplayedBook(res.body.book);
         } else {
           setAlert({
             showAlert: true,
             alertMessage: "Rating Not Updated!" + res.body.message,
             alertSeverity: "error",
           });
+          setDisplayedBook(null);
         }
+
         return;
       });
   };

@@ -8,6 +8,7 @@ import { FormState, addRatingFormSchema } from "./definitions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
+import Card from "@mui/material/Card";
 
 interface IBook {
   authors: string;
@@ -29,6 +30,7 @@ interface IBook {
 
 function BookListItem({book}: {book: IBook}) {
   const [value, setValue] = React.useState<number | null>(5);
+  const noImage = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
   return (
     <Container sx={{}}>
       <Box component="img" src={book.image_url}
@@ -197,7 +199,6 @@ export default function addRating() {
               onChange={(event, newVal) => {
                 setValue(newVal);
               }}
-
             />
         </Typography>
           <Box sx={{fontSize: '14px'}} paddingLeft={2}>

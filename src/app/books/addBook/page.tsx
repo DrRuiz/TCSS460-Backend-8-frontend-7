@@ -45,6 +45,12 @@ let displayedBook: IBook = {
   title: ""
 };
 
+interface IAlert {
+  showAlert: boolean;
+  alertMessage: string;
+  alertSeverity: string;
+}
+
 const EMPTY_ALERT: IAlert = {
   showAlert: false,
   alertMessage: "",
@@ -114,11 +120,18 @@ export default function AddBook() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
+    const id = Number(data.get("id"));
     const isbn13 = String(data.get("isbn13"));
+    const author = String(data.get("author"));
+    const year = Number(data.get("year"));
+    const title = String(data.get("title"));
 
     const validateFields = addRatingFormSchema.safeParse({
+      id: id,
       isbn13: isbn13,
-      star: Number(data.get("star")),
+      author: author,
+      year: year,
+      title: title,
     });
 
     if (!validateFields.success) {
@@ -136,13 +149,19 @@ export default function AddBook() {
     }
     console.dir('isbn13:', isbn13);
 
-    fetch(`http://localhost:4000/books/rating/${isbn13}`, {
-      method: "PUT", // *GET, POST, PUT, DELETE, etc.S
+    fetch(`http://localhost:4000/books/new`, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.S
       headers: {
         "Content-Type": "application/json",
       },
+      //maybe need left col names to be consistent with backend naming convention?
       body: JSON.stringify({
-        star : validateFields.data.star}),
+        id : validateFields.data.id,
+        isbn13 : validateFields.data.isbn13,
+        authors : validateFields.data.author,
+        publication_year : validateFields.data.year,
+        title : validateFields.data.title
+      }),
     })
       .then((res) =>
         res
@@ -154,28 +173,28 @@ export default function AddBook() {
         if (res.ok) {
           setAlert({
             showAlert: true,
-            alertMessage: "Rating Updated!",
+            alertMessage: "Book added!",
             alertSeverity: "success",
           });
         displayedBook = res.body.book
         } else {
           setAlert({
             showAlert: true,
-            alertMessage: "Rating Not Updated!" + res.body.message,
+            alertMessage: "Book not added!" + res.body.message,
             alertSeverity: "error",
           });
         }
         return;
       });
   };
+
   return (
     <Container>
       <Box
-        sx={{
-          alignItems: "center",
-          position: 'relative',
-          width: "100%",
-        }} 
+        component="form"
+        onSubmit={handleSubmit}
+        noValidate
+        sx={{ mt: 1 }}
       >
         <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: "center"}}>
           Add a New Book
@@ -201,7 +220,6 @@ export default function AddBook() {
               id="isbn13"
               label="ISBN13 Number: "
               name="isbn13"
-              autoFocus
               color="info"
         />
         <TextField
@@ -210,10 +228,9 @@ export default function AddBook() {
               margin="normal"
               required
               fullWidth
-              id="isbn13"
-              label="ISBN13 Number: "
-              name="isbn13"
-              autoFocus
+              id="author"
+              label="Author: "
+              name="author"
               color="info"
         />
         <TextField
@@ -222,10 +239,9 @@ export default function AddBook() {
               margin="normal"
               required
               fullWidth
-              id="isbn13"
-              label="ISBN13 Number: "
-              name="isbn13"
-              autoFocus
+              id="publication_year"
+              label="Publication Year: "
+              name="publication_year"
               color="info"
         />
         <TextField
@@ -234,10 +250,9 @@ export default function AddBook() {
               margin="normal"
               required
               fullWidth
-              id="isbn13"
-              label="ISBN13 Number: "
-              name="isbn13"
-              autoFocus
+              id="title"
+              label="Title: "
+              name="title"
               color="info"
         />
         <Button
@@ -246,7 +261,7 @@ export default function AddBook() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Add Rating
+              Add Book
             </Button>
       </Box>
       <BookListItem book={displayedBook} />

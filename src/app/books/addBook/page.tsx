@@ -178,7 +178,7 @@ export default function AddBook() {
             alertMessage: "Book added!",
             alertSeverity: "success",
           });
-        displayedBook = res.body.book
+        displayedBook = res.body.entry
         } else {
           setAlert({
             showAlert: true,

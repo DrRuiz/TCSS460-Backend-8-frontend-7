@@ -123,8 +123,10 @@ export default function AddBook() {
     const id = Number(data.get("id"));
     const isbn13 = String(data.get("isbn13"));
     const author = String(data.get("author"));
-    const year = Number(data.get("year"));
+    const year = Number(data.get("publication_year"));
     const title = String(data.get("title"));
+
+    console.log("id: (" + id + ") ibsn13: (" + isbn13 + ") author: (" + author + ") year: (" + year + ") title: (" + title + ")");
 
     const validateFields = addRatingFormSchema.safeParse({
       id: id,
@@ -149,12 +151,12 @@ export default function AddBook() {
     }
     console.dir('isbn13:', isbn13);
 
-    fetch(`http://localhost:4000/books/new`, {
+    fetch(`http://localhost:4000/books/new/`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.S
       headers: {
         "Content-Type": "application/json",
       },
-      //maybe need left col names to be consistent with backend naming convention?
+      
       body: JSON.stringify({
         id : validateFields.data.id,
         isbn13 : validateFields.data.isbn13,

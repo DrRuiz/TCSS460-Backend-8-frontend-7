@@ -1,32 +1,35 @@
-# Material UI - Next.js App Router example in TypeScript
+# TCSS 460 Group 7 Front End
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped using [`create-next-app`](https://github.com/vercel/next.js/tree/HEAD/packages/create-next-app) with Material UI installed.
 
-This project is setup to support TCSS 460 as a Starter Project
+This project is a group 7's front-end for the TCSS460 project, using group 6's back-end.
+Authors: Riley Bennett, Max Yim, Derek Ruiz-Garcia, Ryan Anderson
+
 
 ## How to use
 
-Download the example [or clone the repo](https://github.com/UWT-SET-TCSS460-LECTURE-MATERIALS/material-ui-nextjs-ts-template.git):
-
-Install it and run:
+Run the following commands:
 
 ```bash
 npm install
+```
+
+If docker containers are not set up, use the config files
+under oldConfigs to create docker containers for the
+back-end using the command:
+
+```bash
+docker-compose up
+```
+
+Then use the config files outside of that folder when running
+the front-end.
+
+To run the app, execute the command
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Learn more
-
-To learn more about this example:
-
-- [Next.js documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Customizing Material UI](https://mui.com/material-ui/customization/how-to-customize/) - approaches to customizing Material UI.
-
-## What's next?
-
-<!-- #default-branch-switch -->
-
-You now have a working example project.
-You can head back to the documentation and continue by browsing the [templates](https://mui.com/material-ui/getting-started/templates/) section.
+alongside the docker containers and open
+[http://localhost:3000](http://localhost:3000) with your browser to see the result.

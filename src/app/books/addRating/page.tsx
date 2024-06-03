@@ -33,7 +33,7 @@ function BookListItem({book}: {book: IBook}) {
   const noImage = "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png";
   return (
     <Container sx={{}}>
-      <Box component="img" src={book.image_url}
+      <Box component="img" src={book.image_url ?? noImage}
       sx={{border: "3px solid", borderColor: "secondary.main", float: "left", marginRight: "1em"}} 
       />
       {/* <Typography sx={{fontSize: '24px'}}>

@@ -7,6 +7,7 @@ import Rating from '@mui/material/Rating';
 import { FormState, addRatingFormSchema } from "./definitions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { Card } from "@mui/material";
 
 
 interface IBook {
@@ -59,8 +60,8 @@ const EMPTY_ALERT: IAlert = {
 
 function BookListItem({book}: {book: IBook}) {
   return (
-    <Container sx={{position: "absolute", left: "0%"}}>
-      <Box component="img" src="https://images.gr-assets.com/books/1474154022m/3.jpg" 
+    <Card sx={{position: "absolute", width: "50em"}}>
+      <Box component="img" src="https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png" 
       sx={{border: "3px solid", borderColor: "secondary.main", float: "left", marginRight: "1em"}} 
       />
       <Typography sx={{fontSize: '24px'}}>
@@ -109,13 +110,14 @@ function BookListItem({book}: {book: IBook}) {
         precision={0.5}
         />
       </Typography> */}
-    </Container>
+    </Card>
   );
 }
 
 export default function AddBook() {
   const [formState, setFormState] = React.useState<FormState>();
   const [alert, setAlert] = React.useState(EMPTY_ALERT);
+  
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -178,7 +180,8 @@ export default function AddBook() {
             alertMessage: "Book added!",
             alertSeverity: "success",
           });
-        displayedBook = res.body.entry
+        displayedBook = res.body.entry[0];
+
         } else {
           setAlert({
             showAlert: true,
@@ -202,8 +205,8 @@ export default function AddBook() {
           Add a New Book
         </Typography>
         <TextField
-              error={formState?.errors?.isbn13 != undefined}
-              helperText={formState?.errors?.isbn13 ?? ""}
+              error={formState?.errors?.id != undefined}
+              helperText={formState?.errors?.id ?? ""}
               margin="normal"
               required
               fullWidth
@@ -225,8 +228,8 @@ export default function AddBook() {
               color="info"
         />
         <TextField
-              error={formState?.errors?.isbn13 != undefined}
-              helperText={formState?.errors?.isbn13 ?? ""}
+              error={formState?.errors?.author != undefined}
+              helperText={formState?.errors?.author ?? ""}
               margin="normal"
               required
               fullWidth
@@ -236,8 +239,8 @@ export default function AddBook() {
               color="info"
         />
         <TextField
-              error={formState?.errors?.isbn13 != undefined}
-              helperText={formState?.errors?.isbn13 ?? ""}
+              error={formState?.errors?.year != undefined}
+              helperText={formState?.errors?.year ?? ""}
               margin="normal"
               required
               fullWidth
@@ -247,8 +250,8 @@ export default function AddBook() {
               color="info"
         />
         <TextField
-              error={formState?.errors?.isbn13 != undefined}
-              helperText={formState?.errors?.isbn13 ?? ""}
+              error={formState?.errors?.title != undefined}
+              helperText={formState?.errors?.title ?? ""}
               margin="normal"
               required
               fullWidth

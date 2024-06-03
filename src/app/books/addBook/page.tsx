@@ -28,24 +28,6 @@ interface IBook {
   title: string;
 }
 
-let displayedBook: IBook = {
-  authors: "",
-  id: 0,
-  image_small_url: "",
-  image_url: "",
-  isbn13: "",
-  original_title: "",
-  publication_year: 0,
-  rating_1_star: 0,
-  rating_2_star: 0,
-  rating_3_star: 0,
-  rating_4_star: 0,
-  rating_5_star: 0,
-  rating_avg: 0,
-  rating_count: 0,
-  title: ""
-};
-
 interface IAlert {
   showAlert: boolean;
   alertMessage: string;
@@ -117,6 +99,7 @@ function BookListItem({book}: {book: IBook}) {
 export default function AddBook() {
   const [formState, setFormState] = React.useState<FormState>();
   const [alert, setAlert] = React.useState(EMPTY_ALERT);
+  const [displayedBook, setDisplayedBook] = React.useState<IBook | null>(null);
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -128,7 +111,6 @@ export default function AddBook() {
     const year = Number(data.get("publication_year"));
     const title = String(data.get("title"));
 
-    console.log("id: (" + id + ") ibsn13: (" + isbn13 + ") author: (" + author + ") year: (" + year + ") title: (" + title + ")");
 
     const validateFields = addRatingFormSchema.safeParse({
       id: id,
@@ -151,7 +133,6 @@ export default function AddBook() {
     } else {
       setFormState({});
     }
-    console.dir('isbn13:', isbn13);
 
     fetch(`http://localhost:4000/books/new/`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.S
@@ -173,14 +154,14 @@ export default function AddBook() {
           .then((body) => ({ body: body, ok: res.ok, status: res.status }))
       )
       .then((res) => {
-        console.dir(res);
         if (res.ok) {
           setAlert({
             showAlert: true,
             alertMessage: "Book added!",
             alertSeverity: "success",
           });
-        displayedBook = res.body.entry[0];
+        
+        setDisplayedBook(res.body.entry[0]);
 
         } else {
           setAlert({
@@ -188,6 +169,7 @@ export default function AddBook() {
             alertMessage: "Book not added!" + res.body.message,
             alertSeverity: "error",
           });
+          setDisplayedBook(null);
         }
         return;
       });
@@ -269,7 +251,7 @@ export default function AddBook() {
               Add Book
             </Button>
       </Box>
-      <BookListItem book={displayedBook} />
+      {displayedBook && <BookListItem book={displayedBook} />}
     </Container>
   );
 }

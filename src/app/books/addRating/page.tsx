@@ -119,7 +119,6 @@ export default function addRating() {
     } else {
       setFormState({});
     }
-    console.dir('isbn13:', isbn13);
 
     fetch(`http://localhost:4000/books/rating/${isbn13}`, {
       method: "PUT", // *GET, POST, PUT, DELETE, etc.S
@@ -135,7 +134,6 @@ export default function addRating() {
           .then((body) => ({ body: body, ok: res.ok, status: res.status }))
       )
       .then((res) => {
-        console.dir(res);
         if (res.ok) {
           setAlert({
             showAlert: true,

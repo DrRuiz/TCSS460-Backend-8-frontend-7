@@ -343,12 +343,6 @@ export default function Find() {
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
             />
-
-            {/* <IconButton type="button" sx={{ p: '10px' }} aria-label="search" 
-            onClick={handleSearch}
-            >
-              <SearchIcon color="info"/>
-            </IconButton> */}
           </Paper>
         </Box>
 
@@ -411,7 +405,7 @@ export default function Find() {
               >
                 <CloseIcon />
               </IconButton>
-              <DialogContent dividers sx={{width: "35vw", display: 'flex', alignItems: 'center' }}>
+              <DialogContent dividers sx={{width: "30vw", display: 'flex', alignItems: 'center' }}>
                 <div style={{ flex: 1 }}>
                   <Typography gutterBottom>
                     ISBN: {currentBook?.isbn13}
@@ -450,7 +444,7 @@ export default function Find() {
                     Five Star Ratings: {currentBook?.rating_5_star}
                   </Typography>
                 </div>
-                <img src={currentBook?.image_url} alt="The book's cover" style={{width: '200px', height: '300px', marginLeft: '10px'}} />
+                <img src={currentBook?.image_url ?? "https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png"} alt="The book's cover" style={{width: '200px', height: '300px', marginLeft: '10px'}} />
               </DialogContent>
             </BootstrapDialog>
           </React.Fragment>
